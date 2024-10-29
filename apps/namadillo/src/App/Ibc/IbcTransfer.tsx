@@ -34,6 +34,7 @@ export const IbcTransfer: React.FC = () => {
   const [shielded, setShielded] = useState<boolean>(true);
   const [selectedAsset, setSelectedAsset] = useState<Asset>();
   const [currentStep, setCurrentStep] = useState(0);
+  const [generalErrorMessage, setGeneralErrorMessage] = useState("");
   const performIbcTransfer = useAtomValue(ibcTransferAtom);
   const defaultAccounts = useAtomValue(allDefaultAccountsAtom);
   const {
@@ -44,7 +45,7 @@ export const IbcTransfer: React.FC = () => {
   } = useWalletManager(keplr);
 
   const {
-    balance: totalAvailableAmount,
+    balance: availableAmount,
     availableAssets,
     isLoading: isLoadingBalances,
   } = useAssetAmount({
@@ -66,7 +67,7 @@ export const IbcTransfer: React.FC = () => {
 
         if (typeof asset !== "undefined") {
           return {
-            amount: BigNumber(1), // TODO: remove hardcoding
+            amount: BigNumber(3000), // TODO: remove hardcoding
             token: asset,
           };
         }
@@ -93,6 +94,7 @@ export const IbcTransfer: React.FC = () => {
     ibcOptions,
   }: OnSubmitTransferParams): Promise<void> => {
     try {
+      setGeneralErrorMessage("");
       setCurrentStep(1);
 
       if (typeof sourceAddress === "undefined") {
@@ -100,11 +102,11 @@ export const IbcTransfer: React.FC = () => {
       }
 
       if (!chainId) {
-        throw new Error("chain ID is undefined");
+        throw new Error("Chain ID is undefined");
       }
 
       if (!selectedAsset) {
-        throw new Error("no asset is selected");
+        throw new Error("No asset is selected");
       }
 
       if (!registry) {
@@ -164,7 +166,8 @@ export const IbcTransfer: React.FC = () => {
       }
 
       setCurrentStep(2);
-    } catch {
+    } catch (err) {
+      setGeneralErrorMessage(err + "");
       setCurrentStep(0);
     }
   };
@@ -176,22 +179,6 @@ export const IbcTransfer: React.FC = () => {
   const onChangeChain = (chain: Chain): void => {
     connectToChainId(chain.chain_id);
   };
-
-  const availableAmountMinusFees = useMemo(() => {
-    if (
-      typeof totalAvailableAmount === "undefined" ||
-      typeof transactionFee === "undefined" ||
-      typeof selectedAsset === "undefined"
-    ) {
-      return undefined;
-    }
-
-    if (selectedAsset.base === transactionFee.token.base) {
-      return totalAvailableAmount.minus(transactionFee.amount);
-    } else {
-      return totalAvailableAmount;
-    }
-  }, [totalAvailableAmount, selectedAsset, transactionFee]);
 
   return (
     <>
@@ -211,7 +198,7 @@ export const IbcTransfer: React.FC = () => {
                 isLoadingAssets: isLoadingBalances,
                 availableAssets,
                 selectedAsset,
-                availableAmount: availableAmountMinusFees,
+                availableAmount,
                 availableChains,
                 onChangeChain,
                 chain: mapUndefined((id) => chainRegistry[id].chain, chainId),
@@ -232,6 +219,7 @@ export const IbcTransfer: React.FC = () => {
               transactionFee={transactionFee}
               isSubmitting={performIbcTransfer.isPending}
               isIbcTransfer={true}
+              errorMessage={generalErrorMessage}
               onSubmitTransfer={onSubmitTransfer}
             />
           </motion.div>

@@ -10,8 +10,9 @@ import { atom } from "jotai";
 import { atomWithQuery } from "jotai-tanstack-query";
 import { namadaAsset } from "registry/namadaAsset";
 import { unknownAsset } from "registry/unknownAsset";
+import { findExpoent } from "utils/registry";
 import { getSdkInstance } from "utils/sdk";
-import { findExpoent, sumDollars } from "./functions";
+import { sumDollars } from "./functions";
 import { fetchCoinPrices } from "./services";
 
 export type TokenBalance = {
@@ -23,6 +24,7 @@ export type TokenBalance = {
   dollar?: BigNumber;
 };
 
+// TODO import from namada-chain-registry
 const NAM_DENOM = "nam";
 
 export const viewingKeyAtom = atomWithQuery<string>((get) => {

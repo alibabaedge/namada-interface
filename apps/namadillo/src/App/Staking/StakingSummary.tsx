@@ -8,7 +8,6 @@ import { AtomErrorBoundary } from "App/Common/AtomErrorBoundary";
 import { BalanceChart } from "App/Common/BalanceChart";
 import { NamCurrency } from "App/Common/NamCurrency";
 import { routes } from "App/routes";
-import BigNumber from "bignumber.js";
 import { useBalances } from "hooks/useBalances";
 import { StakingRewardsPanel } from "./StakingRewardsPanel";
 
@@ -19,7 +18,6 @@ export const StakingSummary = (): JSX.Element => {
     isLoading,
     availableAmount,
     bondedAmount,
-    shieldedAmount,
     unbondedAmount,
     withdrawableAmount,
     totalAmount,
@@ -37,7 +35,6 @@ export const StakingSummary = (): JSX.Element => {
             isLoading={isLoading}
             availableAmount={availableAmount}
             bondedAmount={bondedAmount}
-            shieldedAmount={shieldedAmount || new BigNumber(0)}
             unbondedAmount={unbondedAmount}
             withdrawableAmount={withdrawableAmount}
             totalAmount={totalAmount}

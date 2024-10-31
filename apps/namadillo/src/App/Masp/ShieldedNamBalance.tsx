@@ -1,7 +1,7 @@
 import { SkeletonLoading, Stack, Tooltip } from "@namada/components";
 import { AtomErrorBoundary } from "App/Common/AtomErrorBoundary";
 import { NamCurrency } from "App/Common/NamCurrency";
-import { shieldedNamAmountAtom } from "atoms/masp/atoms";
+import { NAM_DENOM, shieldedTokensAtom, TokenBalance } from "atoms/masp/atoms";
 import { applicationFeaturesAtom } from "atoms/settings/atoms";
 import BigNumber from "bignumber.js";
 import { useAtomValue } from "jotai";
@@ -29,13 +29,18 @@ const AsyncNamCurrency = ({ amount }: { amount?: BigNumber }): JSX.Element => {
   );
 };
 
+const getTotalNam = (list?: TokenBalance[]): BigNumber | undefined =>
+  list?.find((i) => i.denom === NAM_DENOM)?.balance;
+
 export const ShieldedNamBalance = (): JSX.Element => {
-  const shieldedNamAmountQuery = useAtomValue(shieldedNamAmountAtom);
+  const shieldedTokensQuery = useAtomValue(shieldedTokensAtom);
   const { shieldingRewardsEnabled } = useAtomValue(applicationFeaturesAtom);
+
+  const shieldedNam = getTotalNam(shieldedTokensQuery.data);
 
   return (
     <AtomErrorBoundary
-      result={shieldedNamAmountQuery}
+      result={shieldedTokensQuery}
       niceError="Unable to load shielded NAM balance"
     >
       <div className="flex flex-col sm:grid sm:grid-cols-[1fr_1fr] gap-2 min-h-full text-yellow">
@@ -59,7 +64,7 @@ export const ShieldedNamBalance = (): JSX.Element => {
               />
             </div>
           </div>
-          <AsyncNamCurrency amount={shieldedNamAmountQuery.data} />
+          <AsyncNamCurrency amount={shieldedNam} />
           <div
             className={twMerge(
               "py-2 max-w-[160px] mx-auto mt-4 mb-3",
@@ -102,7 +107,7 @@ export const ShieldedNamBalance = (): JSX.Element => {
           : <div className="block text-center text-3xl">--</div>}
           <div
             className={twMerge(
-              "border border-white rounded-md py-2 max-w-[200px] mx-auto mt-4",
+              "border border-white rounded-md p-2 max-w-[200px] mx-auto mt-4",
               "text-white text-xs text-center"
             )}
           >

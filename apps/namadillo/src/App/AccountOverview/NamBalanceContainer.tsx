@@ -47,7 +47,6 @@ export const NamBalanceContainer = (): JSX.Element => {
     isLoading,
     availableAmount,
     bondedAmount,
-    shieldedAmount,
     unbondedAmount,
     withdrawableAmount,
     totalAmount,
@@ -65,7 +64,6 @@ export const NamBalanceContainer = (): JSX.Element => {
             isLoading={isLoading}
             availableAmount={availableAmount}
             bondedAmount={bondedAmount}
-            shieldedAmount={shieldedAmount || new BigNumber(0)}
             unbondedAmount={unbondedAmount}
             withdrawableAmount={withdrawableAmount}
             totalAmount={totalAmount}

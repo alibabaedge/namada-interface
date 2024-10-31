@@ -1,21 +1,28 @@
 import { Heading, PieChart, SkeletonLoading } from "@namada/components";
 import { AtomErrorBoundary } from "App/Common/AtomErrorBoundary";
 import { FiatCurrency } from "App/Common/FiatCurrency";
-import { shieldedDollarsAmountAtom } from "atoms/masp/atoms";
+import { NAM_DENOM, shieldedTokensAtom, TokenBalance } from "atoms/masp/atoms";
+import { sumDollars } from "atoms/masp/functions";
+import BigNumber from "bignumber.js";
 import { useAtomValue } from "jotai";
 import { colors } from "theme";
 
+const getTotalDollar = (list?: TokenBalance[]): BigNumber | undefined =>
+  sumDollars(list?.filter((i) => i.denom !== NAM_DENOM));
+
 export const ShieldedBalanceChart = (): JSX.Element => {
-  const shieldedDollarsAmountQuery = useAtomValue(shieldedDollarsAmountAtom);
+  const shieldedTokensQuery = useAtomValue(shieldedTokensAtom);
+
+  const shieldedDollars = getTotalDollar(shieldedTokensQuery.data);
 
   return (
     <div className="flex items-center justify-center h-full w-full">
       <div className="h-[250px] w-[250px]">
         <AtomErrorBoundary
-          result={shieldedDollarsAmountQuery}
+          result={shieldedTokensQuery}
           niceError="Unable to load balance"
         >
-          {shieldedDollarsAmountQuery.isLoading ?
+          {shieldedTokensQuery.isPending ?
             <SkeletonLoading
               height="100%"
               width="100%"
@@ -29,7 +36,7 @@ export const ShieldedBalanceChart = (): JSX.Element => {
               segmentMargin={0}
             >
               <div className="flex flex-col gap-1 items-center leading-tight max-w-[180px]">
-                {!shieldedDollarsAmountQuery.data ?
+                {!shieldedDollars ?
                   <div>Dollar amount is not available</div>
                 : <>
                     <Heading className="text-sm" level="h3">
@@ -37,7 +44,7 @@ export const ShieldedBalanceChart = (): JSX.Element => {
                     </Heading>
                     <FiatCurrency
                       className="text-2xl sm:text-3xl"
-                      amount={shieldedDollarsAmountQuery.data}
+                      amount={shieldedDollars}
                     />
                   </>
                 }

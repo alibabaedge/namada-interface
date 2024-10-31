@@ -1,5 +1,4 @@
 import { accountBalanceAtom } from "atoms/accounts";
-import { shieldedDollarsAmountAtom } from "atoms/masp/atoms";
 import { getStakingTotalAtom } from "atoms/staking";
 import BigNumber from "bignumber.js";
 import { useAtomValue } from "jotai";
@@ -14,14 +13,12 @@ export type useBalancesOutput = {
   availableAmount: BigNumber;
   unbondedAmount: BigNumber;
   withdrawableAmount: BigNumber;
-  shieldedAmount: BigNumber | null;
   totalAmount: BigNumber;
 };
 
 export const useBalances = (): useBalancesOutput => {
   const totalStakedBalance = useAtomValue(getStakingTotalAtom);
   const totalAccountBalance = useAtomValue(accountBalanceAtom);
-  const shieldedDollarsAmountQuery = useAtomValue(shieldedDollarsAmountAtom);
 
   const {
     data: balance,
@@ -35,39 +32,28 @@ export const useBalances = (): useBalancesOutput => {
     isSuccess: isStakedBalanceLoaded,
   } = totalStakedBalance;
 
-  const {
-    data: shieldedDollars,
-    isLoading: isLoadingShieldedDollars,
-    isSuccess: isSuccessShieldedDollars,
-  } = shieldedDollarsAmountQuery;
-
   const availableAmount = new BigNumber(balance || 0);
   const bondedAmount = new BigNumber(stakeBalance?.totalBonded || 0);
   const unbondedAmount = new BigNumber(stakeBalance?.totalUnbonded || 0);
   const withdrawableAmount = new BigNumber(
     stakeBalance?.totalWithdrawable || 0
   );
-  const shieldedAmount = shieldedDollars === undefined ? null : shieldedDollars;
   const totalAmount = BigNumber.sum(
     availableAmount,
     bondedAmount,
     unbondedAmount,
-    withdrawableAmount,
-    shieldedDollars || 0
+    withdrawableAmount
   );
 
   return {
-    isLoading:
-      isFetchingStaking || isFetchingBalance || isLoadingShieldedDollars,
-    isSuccess:
-      isBalanceLoaded && isStakedBalanceLoaded && isSuccessShieldedDollars,
+    isLoading: isFetchingStaking || isFetchingBalance,
+    isSuccess: isBalanceLoaded && isStakedBalanceLoaded,
     stakeQuery: totalStakedBalance,
     balanceQuery: totalAccountBalance,
     availableAmount,
     bondedAmount,
     unbondedAmount,
     withdrawableAmount,
-    shieldedAmount,
     totalAmount,
   };
 };

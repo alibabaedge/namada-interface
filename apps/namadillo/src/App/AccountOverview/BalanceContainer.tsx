@@ -104,33 +104,33 @@ export const BalanceContainer = (): JSX.Element => {
               title="Shielded Assets"
               color={colors.shielded}
               dollar={shieldedDollars}
-              isLoading={shieldedTokensQuery.isLoading}
+              isLoading={shieldedTokensQuery.isPending}
             />
             <NamItem
               title="Shielded NAM"
               color={colors.shielded}
               nam={shieldedNam}
-              isLoading={shieldedTokensQuery.isLoading}
+              isLoading={shieldedTokensQuery.isPending}
             />
 
             <DollarItem
               title="Transparent Assets"
               color={colors.balance}
               dollar={transparentDollars}
-              isLoading={transparentTokensQuery.isLoading}
+              isLoading={transparentTokensQuery.isPending}
             />
             <NamItem
               title="Transparent NAM"
               color={colors.balance}
               nam={transparentNam}
-              isLoading={transparentTokensQuery.isLoading}
+              isLoading={transparentTokensQuery.isPending}
             />
 
             <NamItem
               title="Staked NAM"
               color={colors.bond}
               nam={bondedAmount}
-              isLoading={stakingTotalQuery.isLoading}
+              isLoading={stakingTotalQuery.isPending}
             />
             <NamItem
               title="Unbonded NAM"
@@ -140,7 +140,7 @@ export const BalanceContainer = (): JSX.Element => {
                   unbondedAmount.plus(withdrawableAmount)
                 : undefined
               }
-              isLoading={stakingTotalQuery.isLoading}
+              isLoading={stakingTotalQuery.isPending}
             />
           </Stack>
         </div>

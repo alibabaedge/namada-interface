@@ -5,6 +5,7 @@ import { TableWithPaginator } from "App/Common/TableWithPaginator";
 import { TokenCurrency } from "App/Common/TokenCurrency";
 import { routes } from "App/routes";
 import { TokenBalance } from "atoms/masp/atoms";
+import { getAssetImageUrl } from "integrations/utils";
 import { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -26,7 +27,7 @@ export const ShieldedFungibleTable = ({
 
   const renderRow = ({ asset, balance, dollar }: TokenBalance): TableRow => {
     const display = asset.display;
-    const icon = asset.logo_URIs?.svg ?? asset.logo_URIs?.png;
+    const icon = getAssetImageUrl(asset);
 
     // TODO
     const ssrRate = undefined;

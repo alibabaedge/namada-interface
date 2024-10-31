@@ -16,8 +16,6 @@ import { sumDollars } from "./functions";
 import { fetchCoinPrices } from "./services";
 
 export type TokenBalance = {
-  address: string;
-  amount: string;
   denom: string;
   asset: Asset;
   balance: BigNumber;
@@ -25,7 +23,7 @@ export type TokenBalance = {
 };
 
 // TODO import from namada-chain-registry
-const NAM_DENOM = "nam";
+export const NAM_DENOM = "nam";
 
 export const viewingKeyAtom = atomWithQuery<string>((get) => {
   const accountsQuery = get(accountsAtom);
@@ -61,10 +59,10 @@ export const shieldedBalanceAtom = atomWithQuery<Balance>((get) => {
         return [];
       }
       // TODO mock
+      // getSdkInstance().then((sdk) => sdk.rpc.shieldedSync([viewingKey]));
       // return [
       //   ["tnam1qy440ynh9fwrx8aewjvvmu38zxqgukgc259fzp6h", "37"], // nam
       //   ["tnam1p5nnjnasjtfwen2kzg78fumwfs0eycqpecuc2jwz", "4"], // uatom
-      //   ["unknown", "1"], // 1 unknown token
       // ];
       const sdk = await getSdkInstance();
       await sdk.rpc.shieldedSync([viewingKey]);
@@ -151,8 +149,9 @@ export const tokenPriceAtom = atomWithQuery((get) => {
       });
       const pricesById = await fetchCoinPrices(ids);
       const pricesByDenom: Record<string, number> = {
-        // TODO define how to get the nam's price
+        // TODO mock NAM price
         // nam: 1,
+        // namnam: 1 / 1_000_000,
       };
       Object.entries(pricesById).forEach(([id, { usd }]) => {
         const denom = denomById[id];
@@ -196,8 +195,6 @@ export const shieldedTokensAtom = atomWithQuery<TokenBalance[]>((get) => {
           tokenPrice ? balance.multipliedBy(tokenPrice) : undefined;
 
         return {
-          address,
-          amount,
           denom,
           asset,
           balance,

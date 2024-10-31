@@ -1,97 +1,146 @@
 import { SkeletonLoading, Stack } from "@namada/components";
 import { AtomErrorBoundary } from "App/Common/AtomErrorBoundary";
-import { BalanceChart } from "App/Common/BalanceChart";
 import { FiatCurrency } from "App/Common/FiatCurrency";
 import { NamCurrency } from "App/Common/NamCurrency";
+import { NAM_DENOM, shieldedTokensAtom, TokenBalance } from "atoms/masp/atoms";
+import { sumDollars } from "atoms/masp/functions";
+import { transparentTokensAtom } from "atoms/masp/transparentAtoms";
+import { getStakingTotalAtom } from "atoms/staking";
 import BigNumber from "bignumber.js";
-import { useBalances } from "hooks/useBalances";
+import { useAtomValue } from "jotai";
+import { ReactNode } from "react";
 import { colors } from "theme";
 
-type NamBalanceListItemProps = {
+type ItemProps = {
   title: string;
   color: string;
-  nam?: BigNumber;
-  dollar?: BigNumber | null;
   isLoading: boolean;
+  children?: ReactNode;
 };
 
-const NamBalanceListItem = ({
+const Item = ({
   title,
   color,
-  nam,
-  dollar,
   isLoading,
-}: NamBalanceListItemProps): JSX.Element => {
+  children,
+}: ItemProps): JSX.Element => {
   return (
-    <li className="leading-5 bg-neutral-900 px-4 py-3 rounded-sm min-w-[165px]">
+    <li className="leading-5 bg-neutral-900 px-4 py-3 rounded-sm min-w-[165px] flex justify-between">
       <span className="flex items-center text-xs gap-1.5">
         <i className="w-2 h-2 rounded-full" style={{ background: color }} />
         {title}
       </span>
       <div className="text-lg pl-3.5">
-        {isLoading && <SkeletonLoading height="22px" width="80px" />}
-        {dollar === null && "N/A"}
-        {dollar && <FiatCurrency amount={dollar} />}
-        {nam && <NamCurrency amount={nam} currencySymbolClassName="hidden" />}
+        {isLoading ?
+          <SkeletonLoading height="22px" width="80px" />
+        : children}
       </div>
     </li>
   );
 };
 
+const DollarItem = ({
+  dollar,
+  ...props
+}: {
+  dollar?: BigNumber;
+} & ItemProps): JSX.Element => {
+  return (
+    <Item {...props}>
+      {dollar ?
+        <FiatCurrency amount={dollar} />
+      : "N/A"}
+    </Item>
+  );
+};
+
+const NamItem = ({
+  nam,
+  ...props
+}: { nam?: BigNumber } & ItemProps): JSX.Element => {
+  return (
+    <Item {...props}>
+      {nam ?
+        <NamCurrency amount={nam} currencySymbolClassName="hidden" />
+      : "N/A"}
+    </Item>
+  );
+};
+
+const getTotalDollar = (list?: TokenBalance[]): BigNumber | undefined =>
+  sumDollars(list?.filter((i) => i.denom !== NAM_DENOM));
+
+const getTotalNam = (list?: TokenBalance[]): BigNumber | undefined =>
+  list?.find((i) => i.denom === NAM_DENOM)?.balance;
+
 export const BalanceContainer = (): JSX.Element => {
-  const {
-    balanceQuery,
-    stakeQuery,
-    isLoading,
-    availableAmount,
-    bondedAmount,
-    shieldedAmount,
-    unbondedAmount,
-    withdrawableAmount,
-    totalAmount,
-  } = useBalances();
+  const shieldedTokensQuery = useAtomValue(shieldedTokensAtom);
+  const transparentTokensQuery = useAtomValue(transparentTokensAtom);
+  const stakingTotalQuery = useAtomValue(getStakingTotalAtom);
+
+  const shieldedDollars = getTotalDollar(shieldedTokensQuery.data);
+  const shieldedNam = getTotalNam(shieldedTokensQuery.data);
+
+  const transparentDollars = getTotalDollar(transparentTokensQuery.data);
+  const transparentNam = getTotalNam(transparentTokensQuery.data);
+
+  const bondedAmount = stakingTotalQuery.data?.totalBonded;
+  const unbondedAmount = stakingTotalQuery.data?.totalUnbonded;
+  const withdrawableAmount = stakingTotalQuery.data?.totalWithdrawable;
 
   return (
     <div className="flex items-center justify-center h-full w-full">
       <AtomErrorBoundary
-        result={[balanceQuery, stakeQuery]}
+        result={[
+          shieldedTokensQuery,
+          transparentTokensQuery,
+          stakingTotalQuery,
+        ]}
         niceError="Unable to load balances"
       >
-        <div className="flex flex-wrap md:flex-nowrap gap-4 items-center justify-center">
-          <BalanceChart
-            view="total"
-            isLoading={isLoading}
-            availableAmount={availableAmount}
-            bondedAmount={bondedAmount}
-            shieldedAmount={shieldedAmount || new BigNumber(0)}
-            unbondedAmount={unbondedAmount}
-            withdrawableAmount={withdrawableAmount}
-            totalAmount={totalAmount}
-          />
-          <Stack gap={2} as="ul">
-            <NamBalanceListItem
+        <div className="flex flex-wrap md:flex-nowrap gap-4 items-center justify-center w-full">
+          <Stack gap={2} as="ul" className=" w-full">
+            <DollarItem
               title="Shielded Assets"
               color={colors.shielded}
-              dollar={shieldedAmount}
-              isLoading={isLoading}
+              dollar={shieldedDollars}
+              isLoading={shieldedTokensQuery.isLoading}
             />
-            <NamBalanceListItem
+            <NamItem
+              title="Shielded NAM"
+              color={colors.shielded}
+              nam={shieldedNam}
+              isLoading={shieldedTokensQuery.isLoading}
+            />
+
+            <DollarItem
               title="Transparent Assets"
               color={colors.balance}
-              nam={availableAmount} // TODO
-              isLoading={isLoading}
+              dollar={transparentDollars}
+              isLoading={transparentTokensQuery.isLoading}
             />
-            <NamBalanceListItem
+            <NamItem
+              title="Transparent NAM"
+              color={colors.balance}
+              nam={transparentNam}
+              isLoading={transparentTokensQuery.isLoading}
+            />
+
+            <NamItem
               title="Staked NAM"
               color={colors.bond}
               nam={bondedAmount}
-              isLoading={isLoading}
+              isLoading={stakingTotalQuery.isLoading}
             />
-            <NamBalanceListItem
+            <NamItem
               title="Unbonded NAM"
               color={colors.unbond}
-              nam={unbondedAmount.plus(withdrawableAmount)}
-              isLoading={isLoading}
+              nam={
+                unbondedAmount && withdrawableAmount ?
+                  unbondedAmount.plus(withdrawableAmount)
+                : undefined
+              }
+              isLoading={stakingTotalQuery.isLoading}
             />
           </Stack>
         </div>

@@ -1,4 +1,4 @@
-import { DefaultApi } from "@anomaorg/namada-indexer-client";
+import { Balance, DefaultApi } from "@anomaorg/namada-indexer-client";
 import { getIntegration } from "@namada/integrations";
 import { Account } from "@namada/types";
 import BigNumber from "bignumber.js";
@@ -16,14 +16,23 @@ export const fetchDefaultAccount = async (): Promise<Account | undefined> => {
 
 export const fetchAccountBalance = async (
   api: DefaultApi,
+  account: Account | undefined
+): Promise<Balance[]> => {
+  if (!account) return [];
+  const balancesResponse = await api.apiV1AccountAddressGet(account.address);
+  return balancesResponse.data;
+};
+
+export const fetchNamAccountBalance = async (
+  api: DefaultApi,
   account: Account | undefined,
   tokenAddress: string,
   decimals: number
 ): Promise<BigNumber> => {
   if (!account) return BigNumber(0);
-  const balancesResponse = await api.apiV1AccountAddressGet(account.address);
+  const balancesResponse = await fetchAccountBalance(api, account);
 
-  const balance = balancesResponse.data
+  const balance = balancesResponse
     // TODO: add filter to the api call
     .filter(({ tokenAddress: ta }) => ta === tokenAddress)
     .map(({ tokenAddress, balance }) => {

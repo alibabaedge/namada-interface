@@ -9,9 +9,9 @@ import BigNumber from "bignumber.js";
 import { atomWithMutation, atomWithQuery } from "jotai-tanstack-query";
 import { chainConfigByName } from "registry";
 import {
-  fetchAccountBalance,
   fetchAccounts,
   fetchDefaultAccount,
+  fetchNamAccountBalance,
 } from "./services";
 
 export const accountsAtom = atomWithQuery<readonly Account[]>((get) => {
@@ -91,7 +91,7 @@ export const accountBalanceAtom = atomWithQuery<BigNumber>((get) => {
     refetchInterval: enablePolling ? 1000 : false,
     queryKey: ["balances", tokenAddress.data, defaultAccount.data],
     ...queryDependentFn(async (): Promise<BigNumber> => {
-      return await fetchAccountBalance(
+      return await fetchNamAccountBalance(
         api,
         defaultAccount.data,
         tokenAddress.data!,

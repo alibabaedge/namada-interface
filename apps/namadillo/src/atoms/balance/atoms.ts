@@ -62,12 +62,12 @@ export const shieldedBalanceAtom = atomWithQuery<Balance>((get) => {
         return [];
       }
       // TODO mock
-      await new Promise((r) => setTimeout(() => r(0), 500));
-      getSdkInstance().then((sdk) => sdk.rpc.shieldedSync([viewingKey]));
-      return [
-        ["tnam1qy440ynh9fwrx8aewjvvmu38zxqgukgc259fzp6h", "37"], // nam
-        ["tnam1p5nnjnasjtfwen2kzg78fumwfs0eycqpecuc2jwz", "1"], // uatom
-      ];
+      // await new Promise((r) => setTimeout(() => r(0), 500));
+      // getSdkInstance().then((sdk) => sdk.rpc.shieldedSync([viewingKey]));
+      // return [
+      //   ["tnam1qy440ynh9fwrx8aewjvvmu38zxqgukgc259fzp6h", "37"], // nam
+      //   ["tnam1p5nnjnasjtfwen2kzg78fumwfs0eycqpecuc2jwz", "1"], // uatom
+      // ];
       const sdk = await getSdkInstance();
       await sdk.rpc.shieldedSync([viewingKey]);
       return await sdk.rpc.queryBalance(

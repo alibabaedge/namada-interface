@@ -1,7 +1,8 @@
 import { SkeletonLoading, Stack, Tooltip } from "@namada/components";
 import { AtomErrorBoundary } from "App/Common/AtomErrorBoundary";
 import { NamCurrency } from "App/Common/NamCurrency";
-import { NAM_DENOM, shieldedTokensAtom, TokenBalance } from "atoms/masp/atoms";
+import { shieldedTokensAtom } from "atoms/masp/atoms";
+import { getTotalNam } from "atoms/masp/functions";
 import { applicationFeaturesAtom } from "atoms/settings/atoms";
 import BigNumber from "bignumber.js";
 import { useAtomValue } from "jotai";
@@ -28,9 +29,6 @@ const AsyncNamCurrency = ({ amount }: { amount?: BigNumber }): JSX.Element => {
     />
   );
 };
-
-const getTotalNam = (list?: TokenBalance[]): BigNumber | undefined =>
-  list?.find((i) => i.denom === NAM_DENOM)?.balance;
 
 export const ShieldedNamBalance = (): JSX.Element => {
   const shieldedTokensQuery = useAtomValue(shieldedTokensAtom);

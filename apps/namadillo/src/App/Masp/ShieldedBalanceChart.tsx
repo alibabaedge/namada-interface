@@ -1,14 +1,10 @@
 import { Heading, PieChart, SkeletonLoading } from "@namada/components";
 import { AtomErrorBoundary } from "App/Common/AtomErrorBoundary";
 import { FiatCurrency } from "App/Common/FiatCurrency";
-import { NAM_DENOM, shieldedTokensAtom, TokenBalance } from "atoms/masp/atoms";
-import { sumDollars } from "atoms/masp/functions";
-import BigNumber from "bignumber.js";
+import { shieldedTokensAtom } from "atoms/masp/atoms";
+import { getTotalDollar } from "atoms/masp/functions";
 import { useAtomValue } from "jotai";
 import { colors } from "theme";
-
-const getTotalDollar = (list?: TokenBalance[]): BigNumber | undefined =>
-  sumDollars(list?.filter((i) => i.denom !== NAM_DENOM));
 
 export const ShieldedBalanceChart = (): JSX.Element => {
   const shieldedTokensQuery = useAtomValue(shieldedTokensAtom);

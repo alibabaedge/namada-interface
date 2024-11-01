@@ -2,9 +2,8 @@ import { SkeletonLoading, Stack } from "@namada/components";
 import { AtomErrorBoundary } from "App/Common/AtomErrorBoundary";
 import { FiatCurrency } from "App/Common/FiatCurrency";
 import { NamCurrency } from "App/Common/NamCurrency";
-import { NAM_DENOM, shieldedTokensAtom, TokenBalance } from "atoms/masp/atoms";
-import { sumDollars } from "atoms/masp/functions";
-import { transparentTokensAtom } from "atoms/masp/transparentAtoms";
+import { shieldedTokensAtom, transparentTokensAtom } from "atoms/masp/atoms";
+import { getTotalDollar, getTotalNam } from "atoms/masp/functions";
 import { getStakingTotalAtom } from "atoms/staking";
 import BigNumber from "bignumber.js";
 import { useAtomValue } from "jotai";
@@ -66,12 +65,6 @@ const NamItem = ({
     </Item>
   );
 };
-
-const getTotalDollar = (list?: TokenBalance[]): BigNumber | undefined =>
-  sumDollars(list?.filter((i) => i.denom !== NAM_DENOM));
-
-const getTotalNam = (list?: TokenBalance[]): BigNumber | undefined =>
-  list?.find((i) => i.denom === NAM_DENOM)?.balance;
 
 export const BalanceContainer = (): JSX.Element => {
   const shieldedTokensQuery = useAtomValue(shieldedTokensAtom);

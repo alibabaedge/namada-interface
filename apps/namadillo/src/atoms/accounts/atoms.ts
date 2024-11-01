@@ -1,3 +1,4 @@
+import { Balance } from "@anomaorg/namada-indexer-client";
 import { getIntegration } from "@namada/integrations";
 import { Account } from "@namada/types";
 import { indexerApiAtom } from "atoms/api";
@@ -9,6 +10,7 @@ import BigNumber from "bignumber.js";
 import { atomWithMutation, atomWithQuery } from "jotai-tanstack-query";
 import { chainConfigByName } from "registry";
 import {
+  fetchAccountBalance,
   fetchAccounts,
   fetchDefaultAccount,
   fetchNamAccountBalance,
@@ -100,5 +102,31 @@ export const accountBalanceAtom = atomWithQuery<BigNumber>((get) => {
         chainConfig.currencies[0].coinDecimals
       );
     }, [tokenAddress, defaultAccount]),
+  };
+});
+
+// TODO combine the `accountBalanceAtom` with the `transparentBalanceAtom`
+// Then execute only once the `fetchAccountBalance`, deleting the `fetchNamAccountBalance`
+export const transparentBalanceAtom = atomWithQuery<Balance[]>((get) => {
+  const enablePolling = get(shouldUpdateBalanceAtom);
+  const defaultAccountQuery = get(defaultAccountAtom);
+  const api = get(indexerApiAtom);
+  const namTokenAddressQuery = get(nativeTokenAddressAtom);
+
+  return {
+    refetchInterval: enablePolling ? 1000 : false,
+    queryKey: ["transparent-balance", defaultAccountQuery.data],
+    ...queryDependentFn(async () => {
+      const response = await fetchAccountBalance(api, defaultAccountQuery.data);
+      // TODO
+      // The indexer is returning as `namnam`, but the SDK is returning as `nam` for the same address.
+      // We need to define a common pattern here, so we can share the same atoms.
+      // Wor now, we are transforming the api returned value from `namnam` to `nam`.
+      return response.map((item) =>
+        item.tokenAddress === namTokenAddressQuery.data ?
+          { ...item, balance: BigNumber(item.balance).shiftedBy(-6).toString() }
+        : item
+      );
+    }, [defaultAccountQuery]),
   };
 });

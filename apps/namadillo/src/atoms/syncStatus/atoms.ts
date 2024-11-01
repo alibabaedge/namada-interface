@@ -1,5 +1,5 @@
 import { accountBalanceAtom } from "atoms/accounts/atoms";
-import { shieldedBalanceAtom } from "atoms/masp/atoms";
+import { shieldedBalanceAtom } from "atoms/balance/atoms";
 import { allProposalsAtom, votedProposalsAtom } from "atoms/proposals/atoms";
 import { indexerHeartbeatAtom, rpcHeartbeatAtom } from "atoms/settings/atoms";
 import { allValidatorsAtom, myValidatorsAtom } from "atoms/validators/atoms";

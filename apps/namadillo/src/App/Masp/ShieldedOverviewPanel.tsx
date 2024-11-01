@@ -1,7 +1,7 @@
 import { ActionButton, Panel, SkeletonLoading } from "@namada/components";
 import { AtomErrorBoundary } from "App/Common/AtomErrorBoundary";
 import { routes } from "App/routes";
-import { shieldedTokensAtom } from "atoms/masp/atoms";
+import { shieldedTokensAtom } from "atoms/balance/atoms";
 import { useUserHasAccount } from "hooks/useIsAuthenticated";
 import { useAtomValue } from "jotai";
 import { useState } from "react";

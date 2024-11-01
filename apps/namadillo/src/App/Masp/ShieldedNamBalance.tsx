@@ -1,8 +1,8 @@
 import { SkeletonLoading, Stack, Tooltip } from "@namada/components";
 import { AtomErrorBoundary } from "App/Common/AtomErrorBoundary";
 import { NamCurrency } from "App/Common/NamCurrency";
-import { shieldedTokensAtom } from "atoms/masp/atoms";
-import { getTotalNam } from "atoms/masp/functions";
+import { shieldedTokensAtom } from "atoms/balance/atoms";
+import { getTotalNam } from "atoms/balance/functions";
 import { applicationFeaturesAtom } from "atoms/settings/atoms";
 import BigNumber from "bignumber.js";
 import { useAtomValue } from "jotai";

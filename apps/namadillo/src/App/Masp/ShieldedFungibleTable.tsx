@@ -4,7 +4,7 @@ import { FiatCurrency } from "App/Common/FiatCurrency";
 import { TableWithPaginator } from "App/Common/TableWithPaginator";
 import { TokenCurrency } from "App/Common/TokenCurrency";
 import { routes } from "App/routes";
-import { TokenBalance } from "atoms/masp/atoms";
+import { TokenBalance } from "atoms/balance/atoms";
 import { getAssetImageUrl } from "integrations/utils";
 import { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";

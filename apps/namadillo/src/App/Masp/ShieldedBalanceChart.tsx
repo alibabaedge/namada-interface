@@ -1,8 +1,8 @@
 import { Heading, PieChart, SkeletonLoading } from "@namada/components";
 import { AtomErrorBoundary } from "App/Common/AtomErrorBoundary";
 import { FiatCurrency } from "App/Common/FiatCurrency";
-import { shieldedTokensAtom } from "atoms/masp/atoms";
-import { getTotalDollar } from "atoms/masp/functions";
+import { shieldedTokensAtom } from "atoms/balance/atoms";
+import { getTotalDollar } from "atoms/balance/functions";
 import { useAtomValue } from "jotai";
 import { colors } from "theme";
 
